@@ -37,9 +37,20 @@ def _patch_faulty_function(self):
 
 class AI_Assistant(object):
 
+    def __init__(self):
+        
+        self.config = self.get_config()
+
+    def get_config(self):
+        
+        with open("config.json") as f:
+            config = json.load(f) 
+
+        return config
+         
+
     def respond(self, text):
 
-        # Money Patch faulty function
         Token._get_token_key = _patch_faulty_function
 
         tts = gTTS(text=text, lang='en') 
@@ -122,7 +133,8 @@ class AI_Assistant(object):
 
         print("Got request to play: {}".format(artist_name))
         
-        artist_dir = "/home/kirill/Music/" + artist_name + "/"
+        artist_dir = self.config["music_dir"] + artist_name + "/"
+
         artist_songs = get_artist_songs(artist_dir)
 
         rn.shuffle(artist_songs) 
