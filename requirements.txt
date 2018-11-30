@@ -1,0 +1,4 @@
+gTTS
+PyAudio
+pandas-datareader
+
