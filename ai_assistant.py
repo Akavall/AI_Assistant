@@ -27,6 +27,18 @@ class AI_Assistant(object):
         tts.save("response.mp3")
         os.system("mplayer response.mp3")
 
+
+    def handle_simple_response(self, content):
+
+        with open("simple_responses.json") as f:
+            simple_responses = json.load(f)
+
+        for entry in simple_responses:
+            if all(ele in content for ele in entry["keywords"]):
+                self.respond(entry["answer"])
+                return 
+     
+
     def greeting(self):
         text = "Hi, I am Alice, I am listening"
         self.respond(text)
