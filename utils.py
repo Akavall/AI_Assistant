@@ -1,7 +1,7 @@
 
 import os
 
-def get_artist_songs(directory_path):
+def get_songs(directory_path):
     songs = []
     for root, dirs, files in os.walk(directory_path):
         for file_name in files:

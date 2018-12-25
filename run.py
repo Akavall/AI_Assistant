@@ -54,6 +54,9 @@ if __name__ == "__main__":
                 elif "price" in content and "stock" in content:
                     ai_assistant.get_stock_price(content)
 
+                elif "repeat" in content:
+                    ai_assistant.repeat(content)
+
                 ai_assistant.handle_simple_response(content)
 
         except Exception as exc:

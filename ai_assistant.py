@@ -5,7 +5,7 @@ import requests
 import random as rn
 import pandas_datareader.data as web
 
-from utils import get_artist_songs
+from utils import get_songs
 
 class AI_Assistant(object):
 
@@ -27,7 +27,11 @@ class AI_Assistant(object):
         tts.save("response.mp3")
         os.system("mplayer response.mp3")
 
+    def repeat(self, text):
 
+        text_to_repeat = text.split("repeat")[1]
+        self.respond(text_to_repeat)
+        
     def handle_simple_response(self, content):
 
         with open("simple_responses.json") as f:
@@ -104,33 +108,83 @@ class AI_Assistant(object):
     def get_weather(self, content):
         pass
 
-    def play_music(self, content):
-    
-        if "bad" in content and "religion" in content:
-            self.play_artist("BadReligion") 
-        elif "emily" in content:
-            self.play_artist("EmilyDavis")
 
-    def play_artist(self, artist_name):
+    def extract_n_songs(self, content):
+
+        if not "songs" in content:
+            return 1
+        
+        s_content = content.split()
+        ind_songs = s_content.index("songs")
+        ind_num = ind_songs - 1
+
+        str_to_int = {"1": 1,
+                      "2": 2,
+                      "3": 3,
+                      "4": 4,
+                      "5": 5,
+                      "6": 6,
+                      "7": 7,
+                      "8": 8,
+                      "9": 9,
+                      "10": 10,
+                      "one": 1,
+                      "to": 2,
+                      "too": 2,
+                      "two": 2,
+                      "three": 3,
+                      "four": 4,
+                      "five": 5,
+                      "six": 6,
+                      "seven": 7,
+                      "eight": 8,
+                      "nine": 9,
+                      "ten": 10,
+                     }
+
+        if ind_num > -1:
+            return str_to_int.get(s_content[ind_num], 1)
+
+        return 1
+
+
+    def play_music(self, content):
+
+        n_songs = self.extract_n_songs(content)
+
+        if "bad religion" in content:
+            self.play_artist("BadReligion", n_songs) 
+        elif "emily" in content:
+            self.play_artist("EmilyDavis", n_songs)
+        elif "music" in content:
+            self.play_music_in_dir(self.config["music_dir"] + "/", n_songs)
+
+    
+
+    def play_artist(self, artist_name, n_songs=1):
 
         print("Got request to play: {}".format(artist_name))
         
         artist_dir = self.config["music_dir"] + artist_name + "/"
 
-        artist_songs = get_artist_songs(artist_dir)
+        self.play_music_in_dir(artist_dir, n_songs)
 
-        rn.shuffle(artist_songs) 
+    def play_music_in_dir(self, dir_path, n_songs=1):
 
-        n_songs_to_play = 1
+        songs = get_songs(dir_path)
 
-        if len(artist_songs) >= n_songs_to_play:
-            print("About to play: {}".format(artist_songs[:n_songs_to_play]))
-            for i in range(n_songs_to_play):
-                os.system('mplayer \"{}\"'.format(artist_songs[i]))
+        rn.shuffle(songs) 
+
+        if len(songs) >= n_songs:
+            print("About to play: {}".format(songs[:n_songs]))
+            for i in range(n_songs):
+                os.system('mplayer \"{}\"'.format(songs[i]))
         else:   
-            print("About to play: {}".format(artist_songs))
-            for song in artist_songs:
-                os.system('mplayer \"{}\"'.format(artist_songs[i]))
+            print("About to play: {}".format(songs))
+            for song in songs:
+                os.system('mplayer \"{}\"'.format(songs[i]))
+
+
 
     def tell_a_joke(self):
         
